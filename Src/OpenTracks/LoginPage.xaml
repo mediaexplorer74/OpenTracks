@@ -1,0 +1,47 @@
+﻿<Page
+    x:Class="OpenTracksBETA.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:OpenTracksBETA"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <!-- Background Image -->
+        <Image Source="Assets/bg1.png" Stretch="UniformToFill" />
+
+        <!-- Hub control instead of Panorama -->
+        <Hub Header="opentracks" Background="Transparent">
+
+            <!-- LOGIN SECTION -->
+            <HubSection Header="Login" Width="400">
+                <DataTemplate>
+                    <StackPanel Margin="20">
+                        <TextBlock Text=" Email:" FontSize="24" FontWeight="ExtraLight" Margin="0,0,0,5" />
+                        <TextBox x:Name="EmailBox" Margin="0,0,0,10" />
+                        <TextBlock Text=" Password:" FontSize="24" FontWeight="ExtraLight" Margin="0,0,0,5" />
+                        <PasswordBox x:Name="PasswordBox" Margin="0,0,0,10" />
+                        <Button Content="Login" Click="LoginButton_Click" Width="376" Height="77" />
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+
+            <!-- REGISTER SECTION -->
+            <HubSection Header="Register" Width="400">
+                <DataTemplate>
+                    <StackPanel Margin="20">
+                        <TextBlock Text=" Email:" FontSize="24" FontWeight="ExtraLight" Margin="0,0,0,5" />
+                        <TextBox x:Name="RegEmailBox" Margin="0,0,0,10" />
+                        <TextBlock Text=" Password:" FontSize="24" FontWeight="ExtraLight" Margin="0,0,0,5" />
+                        <PasswordBox x:Name="RegPasswordBox" Margin="0,0,0,10" />
+                        <Button Content="Register" Click="RegisterButton_Click" Width="376" Height="74" />
+                        <TextBlock x:Name="RegisterStatusText" Foreground="Red" Margin="0,20,0,0" />
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+
+        </Hub>
+    </Grid>
+</Page>

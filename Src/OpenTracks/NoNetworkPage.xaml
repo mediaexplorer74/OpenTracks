@@ -1,0 +1,74 @@
+﻿<Page
+    x:Class="OpenTracksBETA.NoNetworkPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:OpenTracksBETA"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid x:Name="LayoutRoot1" Background="Transparent">
+        <!-- Hub Control -->
+        <Hub Header="oops!">
+            <Hub.Background>
+                <ImageBrush ImageSource="Assets/bg1.png"/>
+            </Hub.Background>
+
+            <!-- No Network Info -->
+            <HubSection Header="No Network!" Width="400">
+                <DataTemplate>
+                    <ScrollViewer>
+                        <StackPanel Margin="16,0,16,0">
+                            <TextBlock TextWrapping="Wrap" FontSize="24">
+                                <Run Text="Seems like you did not connect to the internet. After the BETA 2 Update of OpenTracks, the app now requires network to stream music. Connect to a network and restart the app to begin your music journey again!"/>
+                            </TextBlock>
+
+                            <TextBlock Margin="0,20,0,0" TextWrapping="Wrap" FontSize="24">
+                                <Run Text="Need support / Bugs? Email us:"/>
+                                <LineBreak/>
+                                <Run Text="droidjacks4@gmail.com"/>
+                                <LineBreak/>
+                                <Run Text="Telegram: @chockingnetdude"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DataTemplate>
+            </HubSection>
+
+            <!-- App Info -->
+            <HubSection Header="App Infos:" Width="400">
+                <DataTemplate>
+                    <ScrollViewer>
+                        <StackPanel Margin="16,0,16,0">
+                            <TextBlock TextWrapping="Wrap" FontSize="24">
+                                <Run Text="App Version: 1.0"/>
+                                <LineBreak/>
+                                <Run Text="Update: Re-Online Streaming"/>
+                                <LineBreak/>
+                                <Run Text="*All Music Are Non-Copyrighted"/>
+                                <LineBreak/>
+                                <Run Text="OpenTracks for Windows Phone 7"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                <Run Text="Developed by: ChockingNetDude"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                <Run Text="OpenTracks for Windows 10 Mobile"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                <Run Text="Developed by: MediaExplorer"/>
+                                <LineBreak/>
+                                <LineBreak/>
+                                <Run Text="No Network Connected."/>
+                            </TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DataTemplate>
+            </HubSection>
+        </Hub>
+
+        <!-- Optional MediaElement -->
+        <MediaElement x:Name="AudioPlayer" AutoPlay="False" Visibility="Collapsed"/>
+    </Grid>
+</Page>
