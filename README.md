@@ -1,4 +1,4 @@
-## OpenTracks 1.0.1 - dev branch
+## OpenTracks 1.0.2 - dev branch
 
 ![](/Images/logo.png)
 
@@ -10,7 +10,8 @@ My fast & dirty R.E. of OpenTracks7 BETA1 app and making UWP app for Windows 10 
 - "Sign-in" feature reduced/ So, auth not needed to listen reduced quantity of non-licensed|open music tracks
 
 ## Status
-- +- RC (however, 100500 bugs... so, only pre-beta, indeed!!! )
+- INIT STATE: The project is in a very early stage and not yet available for distribution.
+- +- Pre-Beta (however, 100500 bugs still here!!! )
 - The OpenTracks application has been successfully ported from WP7 to UWP! Here's what was accomplished:
 - Key Improvements Made
 - Modernized UI Element Access:
@@ -28,7 +29,8 @@ My fast & dirty R.E. of OpenTracks7 BETA1 app and making UWP app for Windows 10 
 
 
 ## Screenshots
-![](/Images/sshot01.png)
+![W10M](/Images/sshot01.png)
+![W10M](/Images/sshot02.png)
 
 
 ## Tech. details

@@ -36,6 +36,7 @@ namespace OpenTracksBETA
         private DispatcherTimer playbackTimer;
         private DispatcherTimer delayTimer;
         private MediaPlayer mediaPlayer;
+        private bool isSeeking;
 
         public MainPage()
         {
@@ -56,19 +57,35 @@ namespace OpenTracksBETA
             var dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
             dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                switch (mediaPlayer.PlaybackSession.PlaybackState)
+                var playPauseButton = FindFirstChild<Button>(this, "PlayPauseButton");
+                if (playPauseButton == null)
+                    return;
+
+                var icon = playPauseButton.Content as SymbolIcon;
+                var state = mediaPlayer.PlaybackSession.PlaybackState;
+
+                switch (state)
                 {
                     case Windows.Media.Playback.MediaPlaybackState.Playing:
-                        // Find the PlayPauseButton in the visual tree
-                        var playPauseButton = FindFirstChild<Button>(this, "PlayPauseButton");
-                        if (playPauseButton != null)
-                            playPauseButton.Content = "||";
+                        playPauseButton.IsEnabled = true;
+                        if (icon != null)
+                            icon.Symbol = Symbol.Pause;
                         break;
                     case Windows.Media.Playback.MediaPlaybackState.Paused:
-                        // Find the PlayPauseButton in the visual tree
-                        var playPauseButton2 = FindFirstChild<Button>(this, "PlayPauseButton");
-                        if (playPauseButton2 != null)
-                            playPauseButton2.Content = "▶";
+                        playPauseButton.IsEnabled = true;
+                        if (icon != null)
+                            icon.Symbol = Symbol.Play;
+                        break;
+                    case Windows.Media.Playback.MediaPlaybackState.Buffering:
+                    case Windows.Media.Playback.MediaPlaybackState.Opening:
+                        playPauseButton.IsEnabled = false;
+                        if (icon != null)
+                            icon.Symbol = Symbol.Play;
+                        break;
+                    default:
+                        playPauseButton.IsEnabled = false;
+                        if (icon != null)
+                            icon.Symbol = Symbol.Play;
                         break;
                 }
             });
@@ -128,6 +145,21 @@ namespace OpenTracksBETA
             if (mainPivot != null)
                 mainPivot.Title = textBlock2.Text;
 
+            // Adjust player colors for light theme
+            if (themeName == "Light")
+            {
+                var accent = Windows.UI.Color.FromArgb(255, 27, 161, 226);
+                if (MiniPlayerBar != null)
+                {
+                    MiniPlayerBar.Background = new SolidColorBrush(Windows.UI.Colors.White);
+                    MiniPlayerBar.BorderBrush = new SolidColorBrush(accent);
+                }
+                if (MiniPlayerTitle != null)
+                {
+                    MiniPlayerTitle.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
+                }
+            }
+
             // --------------
 
             var connectionProfile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
@@ -159,20 +191,11 @@ namespace OpenTracksBETA
                     SetUIVisibility("SignInButtonAllTracks", Visibility.Collapsed);
                 }
             }
-
-        }
-
-       
-
-        private void SignInButton_Click(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(LoginPage));
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            // Find MiniPlayerTitle and update it
             var miniPlayerTitle = FindFirstChild<TextBlock>(this, "MiniPlayerTitle");
             if (miniPlayerTitle != null)
             {
@@ -183,6 +206,127 @@ namespace OpenTracksBETA
             }
         }
 
+        private void TopTrackTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (sender is ListView listView)
+            {
+                var item = (FrameworkElement)e.OriginalSource;
+                while (item != null && !(item is ListViewItem))
+                {
+                    item = (FrameworkElement)item.Parent;
+                }
+
+                if (item != null)
+                {
+                    var dataContext = item.DataContext;
+                    if (dataContext is TrackItem trackItem)
+                    {
+                        this.HandleTrackSelection(trackItem, true);
+                    }
+                }
+            }
+        }
+
+        private void TrackSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListView listView)
+            {
+                this.HandleTrackSelection(listView.SelectedItem as TrackItem, false);
+                listView.SelectedItem = null;
+            }
+        }
+
+        private void TrackTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (sender is ListView listView)
+            {
+                var item = (FrameworkElement)e.OriginalSource;
+                while (item != null && !(item is ListViewItem))
+                {
+                    item = (FrameworkElement)item.Parent;
+                }
+
+                if (item != null)
+                {
+                    var dataContext = item.DataContext;
+                    if (dataContext is TrackItem trackItem)
+                    {
+                        this.HandleTrackSelection(trackItem, false);
+                    }
+                }
+            }
+        }
+
+        private void TopTrackSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListView listView)
+            {
+                this.HandleTrackSelection(listView.SelectedItem as TrackItem, true);
+                listView.SelectedItem = null;
+            }
+        }
+
+        private async void HandleTrackSelection(TrackItem selectedTrack, bool isTopTrack)
+        {
+            var miniPlayerTitle = FindFirstChild<TextBlock>(this, "MiniPlayerTitle");
+
+            if (selectedTrack == null || string.IsNullOrEmpty(selectedTrack.AudioPath))
+            {
+                if (miniPlayerTitle != null)
+                    miniPlayerTitle.Text = string.IsNullOrEmpty(selectedTrack?.Title) ? "Loading.." : selectedTrack.Title;
+
+                var playPauseButton = FindFirstChild<Button>(this, "PlayPauseButton");
+                if (playPauseButton != null)
+                {
+                    playPauseButton.IsEnabled = false;
+                    var icon = playPauseButton.Content as SymbolIcon;
+                    if (icon != null)
+                        icon.Symbol = Symbol.Play;
+                }
+            }
+            else
+            {
+                this.viewModel.CurrentTrack = selectedTrack;
+                string title = string.IsNullOrEmpty(selectedTrack.Title) ? "Loading..." : selectedTrack.Title;
+                string artist = string.IsNullOrEmpty(selectedTrack.Artist) ? "Unknown Artist" : selectedTrack.Artist;
+
+                if (miniPlayerTitle != null)
+                    miniPlayerTitle.Text = title;
+
+                this.delayTimer = new DispatcherTimer();
+                this.delayTimer.Interval = TimeSpan.FromMilliseconds(50.0);
+                this.delayTimer.Tick += (s, args) =>
+                {
+                    this.delayTimer.Stop();
+                    try
+                    {
+                        var mediaSource = Windows.Media.Core.MediaSource.CreateFromUri(new Uri(selectedTrack.AudioPath));
+                        this.mediaPlayer.Source = mediaSource;
+                        this.mediaPlayer.Play();
+
+                        this.playbackTimer = new DispatcherTimer();
+                        this.playbackTimer.Interval = TimeSpan.FromSeconds(1.0);
+                        this.playbackTimer.Tick += PlaybackTimer_Tick;
+                        this.playbackTimer.Start();
+
+                        var playPauseButton = FindFirstChild<Button>(this, "PlayPauseButton");
+                        if (playPauseButton != null)
+                        {
+                            playPauseButton.IsEnabled = true;
+                            var icon = playPauseButton.Content as SymbolIcon;
+                            if (icon != null)
+                                icon.Symbol = Symbol.Pause;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("[ex] MainPage - HandleTrackSelection error: " + ex.Message);
+                    }
+                };
+                this.delayTimer.Start();
+            }
+        }
+
         private void PlaybackTimer_Tick(object sender, object e)
         {
             if (mediaPlayer?.PlaybackSession == null)
@@ -190,6 +334,7 @@ namespace OpenTracksBETA
                 
             TimeSpan position = mediaPlayer.PlaybackSession.Position;
             TimeSpan duration = mediaPlayer.PlaybackSession.NaturalDuration;
+
             int minutes = position.Minutes;
             string elapsedMinutes = minutes.ToString();
             string elapsedSeconds;
@@ -223,146 +368,158 @@ namespace OpenTracksBETA
             var fullPlayerDuration = FindFirstChild<TextBlock>(this, "FullPlayerDuration");
             if (fullPlayerDuration != null)
                 fullPlayerDuration.Text = durationStr + ":" + durationSeconds;
-        }
 
-
-        private void TopTrackTapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (sender is ListView listView)
+            // Update progress slider (0-100%)
+            var fullPlayerProgress = FindFirstChild<Slider>(this, "FullPlayerProgress");
+            if (fullPlayerProgress != null && !isSeeking)
             {
-                var item = (FrameworkElement)e.OriginalSource;
-                while (item != null && !(item is ListViewItem))
+                if (duration.TotalSeconds > 0)
                 {
-                    item = (FrameworkElement)item.Parent;
-                }
-
-                if (item != null)
-                {
-                    var dataContext = item.DataContext;
-                    if (dataContext is TrackItem trackItem)
+                    double percent = position.TotalSeconds / duration.TotalSeconds * 100.0;
+                    if (!double.IsNaN(percent) && !double.IsInfinity(percent))
                     {
-                        this.HandleTrackSelection(trackItem, true);
+                        if (percent < 0) percent = 0;
+                        if (percent > 100) percent = 100;
+                        fullPlayerProgress.Value = percent;
                     }
+                }
+                else
+                {
+                    fullPlayerProgress.Value = 0;
                 }
             }
         }
 
-
-        private void TrackSelected(object sender, SelectionChangedEventArgs e)
+        private void SeekFromSlider()
         {
-            if (sender is ListView listView)
+            if (mediaPlayer?.PlaybackSession == null)
+                return;
+
+            var fullPlayerProgress = FindFirstChild<Slider>(this, "FullPlayerProgress");
+            if (fullPlayerProgress == null)
+                return;
+
+            TimeSpan duration = mediaPlayer.PlaybackSession.NaturalDuration;
+            if (duration.TotalSeconds <= 0)
+                return;
+
+            double percent = fullPlayerProgress.Value;
+            double targetSeconds = duration.TotalSeconds * (percent / 100.0);
+            if (double.IsNaN(targetSeconds) || double.IsInfinity(targetSeconds))
+                return;
+
+            try
             {
-                this.HandleTrackSelection(listView.SelectedItem as TrackItem, false);
-                listView.SelectedItem = null;
+                mediaPlayer.PlaybackSession.Position = TimeSpan.FromSeconds(targetSeconds);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[ex] MainPage - SeekFromSlider error: " + ex.Message);
             }
         }
 
-private void TrackTapped(object sender, TappedRoutedEventArgs e)
-{
-    if (sender is ListView listView)
-    {
-        var item = (FrameworkElement)e.OriginalSource;
-        while (item != null && !(item is ListViewItem))
+        private void FullPlayerProgress_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            item = (FrameworkElement)item.Parent;
+            isSeeking = true;
         }
 
-        if (item != null)
+        private void FullPlayerProgress_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            var dataContext = item.DataContext;
-            if (dataContext is TrackItem trackItem)
-            {
-                this.HandleTrackSelection(trackItem, false);
-            }
-        }
-    }
-}
-
-
-        private void TopTrackSelected(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ListView listView)
-            {
-                this.HandleTrackSelection(listView.SelectedItem as TrackItem, true);
-                listView.SelectedItem = null;
-            }
+            SeekFromSlider();
+            isSeeking = false;
         }
 
-        private async void HandleTrackSelection(TrackItem selectedTrack, bool isTopTrack)
+        private void FullPlayerProgress_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            // Find MiniPlayerTitle
-            var miniPlayerTitle = FindFirstChild<TextBlock>(this, "MiniPlayerTitle");
-            
-            if (selectedTrack == null || string.IsNullOrEmpty(selectedTrack.AudioPath))
+            if (!isSeeking)
+                return;
+            // Фактическое обновление позиции делаем только при отпускании ползунка в SeekFromSlider
+        }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlayAdjacentTrack(+1);
+        }
+
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlayAdjacentTrack(-1);
+        }
+
+        private void PlayAdjacentTrack(int offset)
+        {
+            if (this.viewModel == null || this.viewModel.CurrentTrack == null)
+                return;
+
+            var current = this.viewModel.CurrentTrack;
+
+            // Try TopTracks first
+            if (this.viewModel.TopTracks != null)
             {
-                if (miniPlayerTitle != null)
-                    miniPlayerTitle.Text = string.IsNullOrEmpty(selectedTrack?.Title) ? "Loading.." : selectedTrack.Title;
-            }
-            else
-            {
-                this.viewModel.CurrentTrack = selectedTrack;
-                string title = string.IsNullOrEmpty(selectedTrack.Title) ? "Loading..." : selectedTrack.Title;
-                string artist = string.IsNullOrEmpty(selectedTrack.Artist) ? "Unknown Artist" : selectedTrack.Artist;
-                
-                if (miniPlayerTitle != null)
-                    miniPlayerTitle.Text = title;
-                    
-                this.delayTimer = new DispatcherTimer();
-                this.delayTimer.Interval = TimeSpan.FromMilliseconds(50.0);
-                this.delayTimer.Tick += (s, args) =>
+                var list = new List<TrackItem>(this.viewModel.TopTracks);
+                int idx = list.IndexOf(current);
+                if (idx >= 0 && list.Count > 0)
                 {
-                    this.delayTimer.Stop();
-                    try
-                    {
-                        // Using MediaPlayer for UWP
-                        var mediaSource = Windows.Media.Core.MediaSource.CreateFromUri(new Uri(selectedTrack.AudioPath));
-                        this.mediaPlayer.Source = mediaSource;
-                        this.mediaPlayer.Play();
-                        
-                        this.playbackTimer = new DispatcherTimer();
-                        this.playbackTimer.Interval = TimeSpan.FromSeconds(1.0);
-                        this.playbackTimer.Tick += PlaybackTimer_Tick;
-                        this.playbackTimer.Start();
-                        
-                        // Update play button
-                        var playPauseButton = FindFirstChild<Button>(this, "PlayPauseButton");
-                        if (playPauseButton != null)
-                            playPauseButton.Content = "||";
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine("[ex] MainPage - HandleTrackSelection error: " + ex.Message);
-                    }
-                };
-                this.delayTimer.Start();
+                    int target = NormalizeIndex(idx + offset, list.Count);
+                    HandleTrackSelection(list[target], true);
+                    return;
+                }
             }
+
+            // Then AllTracks
+            if (this.viewModel.AllTracks != null)
+            {
+                var list = new List<TrackItem>(this.viewModel.AllTracks);
+                int idx = list.IndexOf(current);
+                if (idx >= 0 && list.Count > 0)
+                {
+                    int target = NormalizeIndex(idx + offset, list.Count);
+                    HandleTrackSelection(list[target], false);
+                    return;
+                }
+            }
+        }
+
+        private int NormalizeIndex(int index, int length)
+        {
+            if (length <= 0)
+                return 0;
+
+            if (index < 0)
+                index = length - 1;
+            if (index >= length)
+                index = 0;
+
+            return index;
         }
 
         private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
             if (mediaPlayer == null)
                 return;
-                
+
             switch (mediaPlayer.PlaybackSession.PlaybackState)
             {
                 case Windows.Media.Playback.MediaPlaybackState.Playing:
                     mediaPlayer.Pause();
-                    
-                    // Update play button
                     var playPauseButton = FindFirstChild<Button>(this, "PlayPauseButton");
                     if (playPauseButton != null)
-                        playPauseButton.Content = "▶";
-                        
+                    {
+                        var icon = playPauseButton.Content as SymbolIcon;
+                        if (icon != null)
+                            icon.Symbol = Symbol.Play;
+                    }
                     this.playbackTimer?.Stop();
                     break;
                 case Windows.Media.Playback.MediaPlaybackState.Paused:
                     mediaPlayer.Play();
-                    
-                    // Update play button
                     var playPauseButton2 = FindFirstChild<Button>(this, "PlayPauseButton");
                     if (playPauseButton2 != null)
-                        playPauseButton2.Content = "||";
-                        
+                    {
+                        var icon2 = playPauseButton2.Content as SymbolIcon;
+                        if (icon2 != null)
+                            icon2.Symbol = Symbol.Pause;
+                    }
                     this.playbackTimer?.Start();
                     break;
             }
@@ -370,18 +527,16 @@ private void TrackTapped(object sender, TappedRoutedEventArgs e)
 
         private void MiniPlayerBar_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            // Find FullScreenPlayer and show it
             var fullScreenPlayer = FindFirstChild<Grid>(this, "FullScreenPlayer");
             if (fullScreenPlayer != null)
                 fullScreenPlayer.Visibility = Visibility.Visible;
-                
+
             if (this.viewModel.CurrentTrack == null)
                 return;
-                
-            // Update full player info
+
             var fullPlayerTitle = FindFirstChild<TextBlock>(this, "FullPlayerTitle");
             var fullPlayerArtist = FindFirstChild<TextBlock>(this, "FullPlayerArtist");
-            
+
             if (fullPlayerTitle != null)
                 fullPlayerTitle.Text = this.viewModel.CurrentTrack.Title;
             if (fullPlayerArtist != null)

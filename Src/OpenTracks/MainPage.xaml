@@ -11,7 +11,7 @@
 
     <Grid x:Name="LayoutRoot">
         <Grid.Background>
-            <ImageBrush ImageSource="Assets/bg1.png" />
+            <ImageBrush ImageSource="Assets/assets/bg1.png" Opacity="0.2" />
         </Grid.Background>
 
         <Grid.RowDefinitions>
@@ -62,14 +62,34 @@
                       ItemsSource="{Binding TopTracks}"
                       Tapped="TopTrackTapped"
                       SelectionChanged="TopTrackSelected"
+                      IsItemClickEnabled="True"
+                      SelectionMode="Single"
+                      HorizontalContentAlignment="Stretch"
                       Visibility="Collapsed">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="4" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,0,0,17">
-                                    <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding Artist}" FontSize="14" Foreground="Gray" 
-                                               Margin="12,-6,12,0" />
-                                </StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="72" Height="72" CornerRadius="4" Grid.Column="0" Background="#22000000">
+                                        <Image Source="{Binding AlbumCoverPath}" Stretch="UniformToFill" />
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextTrimming="WordEllipsis" />
+                                        <TextBlock Text="{Binding Artist}" FontSize="14" Foreground="Gray" Margin="0,2,0,0" TextTrimming="WordEllipsis" />
+                                    </StackPanel>
+                                </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -97,14 +117,34 @@
                  ItemsSource="{Binding AllTracks}"
                  SelectionChanged="TrackSelected"
                  Tapped="TrackTapped"
+                 IsItemClickEnabled="True"
+                 SelectionMode="Single"
+                 HorizontalContentAlignment="Stretch"
                  Visibility="Collapsed">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="4" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,0,0,17">
-                                    <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding Artist}" FontSize="14" Foreground="Gray" 
-                                               Margin="12,-6,12,0" />
-                                </StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="72" Height="72" CornerRadius="4" Grid.Column="0" Background="#22000000">
+                                        <Image Source="{Binding AlbumCoverPath}" Stretch="UniformToFill" />
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextTrimming="WordEllipsis" />
+                                        <TextBlock Text="{Binding Artist}" FontSize="14" Foreground="Gray" Margin="0,2,0,0" TextTrimming="WordEllipsis" />
+                                    </StackPanel>
+                                </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -128,12 +168,12 @@
             <PivotItem Header="About App" IsEnabled="True">
                 <ScrollViewer>
                     <TextBlock Margin="16" TextWrapping="Wrap" FontSize="24">
-                        <Run Text="App Version: 1.0 RC" /><LineBreak/>
                         <Run Text="*All Music Are Non-Copyrighted" /><LineBreak/>
                         <Run Text="OpenTracks for Windows Phone 7" /><LineBreak/><LineBreak/>
                         <Run Text="Developed by:" /><LineBreak/>
                         <Run Text="ChockingNetDude" /><LineBreak/><LineBreak/>
                         <Run Text="OpenTracks for Windows 10 Mobile" /><LineBreak/><LineBreak/>
+                        <Run Text="App Version: 1.0.2 (Pre-Beta)" /><LineBreak/>
                         <Run Text="Developed by:" /><LineBreak/>
                         <Run Text="[M]edia[E]xplorer" /><LineBreak/><LineBreak/>
                     </TextBlock>
@@ -144,19 +184,19 @@
         <Border x:Name="MiniPlayerBar"
         Grid.Row="1"
         Margin="20,0,20,20"
-        Background="#AAFFFFFF"
-            BorderBrush="#66FFFFFF"
-            BorderThickness="1"
-            Opacity="0.95"
+        Background="#CC000000"
+            BorderBrush="#FF1BA1E2"
+            BorderThickness="1.5"
+            Opacity="0.98"
         Tapped="MiniPlayerBar_Tapped"
         Height="80">
 
             <StackPanel Margin="12,6" Height="36" Width="404">
                 <TextBlock x:Name="MiniPlayerTitle"
                    Text="No track playing"
-                   FontSize="28"
-                   FontWeight="ExtraLight"
-                   Foreground="White"
+                   FontSize="26"
+                   FontWeight="SemiLight"
+                   Foreground="#FF1BA1E2"
                    TextTrimming="WordEllipsis"
                    Height="40"
                    Width="396" />
@@ -164,7 +204,7 @@
         </Border>
 
         <Grid x:Name="FullScreenPlayer"
-      Background="#AA0000"
+      Background="#F0000000"
       Grid.RowSpan="2"
       Visibility="Collapsed"
       HorizontalAlignment="Stretch"
@@ -212,9 +252,9 @@
             <!-- Compact Player Bar -->
             <Border Width="480"
             Height="560"
-            Background="#22FFFFFF"
-            BorderBrush="#55FFFFFF"
-            BorderThickness="1"
+            Background="#DD101010"
+            BorderBrush="#FF1BA1E2"
+            BorderThickness="1.5"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Padding="20">
@@ -226,18 +266,29 @@
                        Text="Track Title"
                        FontSize="34"
                        FontWeight="SemiBold"
-                       Foreground="White"
+                       Foreground="#FF1BA1E2"
                        TextAlignment="Center"
                        Margin="0,10" />
 
                     <TextBlock x:Name="FullPlayerArtist"
                        Text="Artist Name"
                        FontSize="22"
-                       Foreground="#DDDD"
+                       Foreground="#FFCCCCCC"
                        TextAlignment="Center"
                        Margin="0,0,0,20" />
 
-                    <!-- Progress Bar + Play Button -->
+                    <!-- Progress indicator / seek bar -->
+                    <Slider x:Name="FullPlayerProgress"
+                        Minimum="0" Maximum="100"
+                        Margin="0,0,0,16"
+                        Height="32"
+                        Foreground="#FF1BA1E2"
+                        Background="#33000000"
+                        ValueChanged="FullPlayerProgress_ValueChanged"
+                        PointerPressed="FullPlayerProgress_PointerPressed"
+                        PointerReleased="FullPlayerProgress_PointerReleased" />
+
+                    <!-- Progress Bar + Transport Buttons -->
                     <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,0,0,20"
@@ -248,22 +299,45 @@
                         <TextBlock x:Name="FullPlayerElapsed"
                            Text="0:00"
                            FontSize="20"
-                           Foreground="White"
+                           Foreground="#FFCCCCCC"
                            Width="60"
                            VerticalAlignment="Center" />
 
+                        <Button x:Name="PreviousButton"
+                        Width="60" Height="60"
+                        Background="#22000000"
+                        Foreground="White"
+                        BorderBrush="#FF1BA1E2"
+                        BorderThickness="1.5"
+                        Click="PreviousButton_Click">
+                            <SymbolIcon Symbol="Previous" />
+                        </Button>
+
                         <Button x:Name="PlayPauseButton"
-                        Width="317" Height="71"
-                        Background="Transparent"
+                        Width="220" Height="71"
+                        Background="#22000000"
                         Foreground="White"
                         FontSize="28"
-                        Content="▶"
-                        Click="PlayPauseButton_Click" />
+                        BorderBrush="#FF1BA1E2"
+                        BorderThickness="1.5"
+                        Click="PlayPauseButton_Click">
+                            <SymbolIcon x:Name="PlayPauseIcon" Symbol="Play" />
+                        </Button>
+
+                        <Button x:Name="NextButton"
+                        Width="60" Height="60"
+                        Background="#22000000"
+                        Foreground="White"
+                        BorderBrush="#FF1BA1E2"
+                        BorderThickness="1.5"
+                        Click="NextButton_Click">
+                            <SymbolIcon Symbol="Next" />
+                        </Button>
 
                         <TextBlock x:Name="FullPlayerDuration"
                            Text="3:45"
                            FontSize="20"
-                           Foreground="White"
+                           Foreground="#FFCCCCCC"
                            Width="60"
                            VerticalAlignment="Center" />
                     </StackPanel>
