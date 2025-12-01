@@ -1,4 +1,4 @@
-## OpenTracks 1.0 RC - main branch
+## OpenTracks 1.0.1 - dev branch
 
 ![](/Images/logo.png)
 
@@ -6,7 +6,8 @@ My fast & dirty R.E. of OpenTracks7 BETA1 app and making UWP app for Windows 10 
 
 
 ## Functional features
-- W10M "Astoria" (build 10240) compatibility (experimental)
+- W10M "Astoria" (build 10240) compatibility (experimental... )
+- "Sign-in" feature reduced/ So, auth not needed to listen reduced quantity of non-licensed|open music tracks
 
 ## Status
 - +- RC (however, 100500 bugs... so, only pre-beta, indeed!!! )
@@ -25,13 +26,10 @@ My fast & dirty R.E. of OpenTracks7 BETA1 app and making UWP app for Windows 10 
 - Maintained Backward Compatibility:
 - Used only APIs available in the minimum supported version
 
-## Build Status
-✅ Build Successful - The application now compiles without errors, with only minor warnings that don't affect functionality.
-
 
 ## Screenshots
 ![](/Images/sshot01.png)
-![](/Images/sshot02.png)
+
 
 ## Tech. details
 - App type: UWP
@@ -62,6 +60,6 @@ My fast & dirty R.E. of OpenTracks7 BETA1 app and making UWP app for Windows 10 
 As is. No support. RnD it yourself.
 
 ## .
-[M][E] Nov, 20 2025
+[M][E] Dec, 1 2025
 
 ![](/Images/footer.png)

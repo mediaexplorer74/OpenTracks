@@ -75,7 +75,7 @@
                     </ListView>
 
                     <!-- Sign In Button (visible only when not logged in) -->
-                    <Button x:Name="SignInButtonTopHits"
+                    <!--Button x:Name="SignInButtonTopHits"
                 Content="Sign In"
                 Click="SignInButton_Click"
                 Visibility="Collapsed"
@@ -86,7 +86,7 @@
                 FontWeight="Bold"
                 FontSize="22"
                 Padding="12"
-                Width="300"/>
+                Width="300"/-->
                 </Grid>
             </PivotItem>
 
@@ -110,18 +110,18 @@
                     </ListView>
 
                     <!-- Sign In Button (visible only when not logged in) -->
-                    <Button x:Name="SignInButtonAllTracks"
-                Content="Sign In"
-                Click="SignInButton_Click"
-                Visibility="Collapsed"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="Transparent"
-                Foreground="White"
-                FontWeight="Bold"
-                FontSize="22"
-                Padding="12"
-                Width="300"/>
+                    <!--Button x:Name="SignInButtonAllTracks"
+                    Content="Sign In"
+                    Click="SignInButton_Click"
+                    Visibility="Collapsed"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    FontSize="22"
+                    Padding="12"
+                    Width="300"/-->
                 </Grid>
             </PivotItem>
 

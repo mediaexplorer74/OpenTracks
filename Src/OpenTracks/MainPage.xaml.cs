@@ -471,12 +471,10 @@ private void TrackTapped(object sender, TappedRoutedEventArgs e)
             // ------------------------------
 
             //var signInButtonTopHits = FindFirstChild<Button>(this, "SignInButtonTopHits");
-            if (SignInButtonTopHits != null)
-                SignInButtonTopHits.Visibility = visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            //if (SignInButtonTopHits != null)  SignInButtonTopHits.Visibility = visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
                 
             //var signInButtonAllTracks = FindFirstChild<Button>(this, "SignInButtonAllTracks");
-            if (SignInButtonAllTracks != null)
-                SignInButtonAllTracks.Visibility = visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            // if (SignInButtonAllTracks != null) SignInButtonAllTracks.Visibility = visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
       
