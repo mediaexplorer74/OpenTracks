@@ -38,6 +38,7 @@ My fast & dirty R.E. of OpenTracks7 BETA1 app and making UWP app for Windows 10 
 
 ## References / Credits / Thanks
 - ChockingNetDude :: developer of OpenTracks7 (OpenTracks for Windows Phone 7)
+- open-tracks.vercel.app "Server part" (OpenTracks web-server / web site)
 
 ## TODO
 - Fix Settings storage
